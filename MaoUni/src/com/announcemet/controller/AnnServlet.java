@@ -1,364 +1,336 @@
-	package com.announcemet.controller;
-	
-	import java.io.*;
-	import java.util.*;
-	import java.io.InputStream;
-	
-	import javax.servlet.*;
-	import javax.servlet.http.*;
-	
-	import javax.servlet.annotation.MultipartConfig;
-	//import com.announcement.model.*;
-	import com.announcemet.model.AnnService;
-	import com.announcemet.model.AnnVO;
-	
-	
-	@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 5 * 1024 * 1024, maxRequestSize = 5 * 5 * 1024 * 1024)
-	public class AnnServlet extends HttpServlet {
-		private static final long serialVersionUID = 1L;
-	       
-	    public AnnServlet() {
-	        super();
-	    }
-	
-		public void doGet(HttpServletRequest req, HttpServletResponse res)
-				       throws ServletException, IOException {
-			doPost(req, res);
-		}
-		
-		public void doPost(HttpServletRequest req, HttpServletResponse res)
-				throws ServletException, IOException{
-			
-			req.setCharacterEncoding("UTF-8");
-			String action = req.getParameter("action");
-			
-			
-// ï¿½ï¿½@ï¿½dï¿½ï¿½_ï¿½Ó¦ï¿½select_page.jspï¿½ï¿½ï¿½Ð¨D (ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½dï¿½ï¿½)
-			if ("getOne_For_Display".equals(action)) { 
-	
-				List<String> errorMsgs = new LinkedList<String>();
-				// ï¿½Nï¿½ï¿½ï¿½Xï¿½xï¿½sï¿½bï¿½Ð¨Dï¿½dï¿½ï¿½
-				// ï¿½oï¿½eï¿½ï¿½ï¿½~.
-				req.setAttribute("errorMsgs", errorMsgs);
-		
-				try {
-					                                         //1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z
-					String str = req.getParameter("id");
-					                                         //trim() ï¿½rï¿½ï¿½}ï¿½Yï¿½Îµï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Å®ï¿½ï¿½
-					                                         //ï¿½ï¿½^ï¿½@ï¿½Ó·sï¿½ï¿½ï¿½rï¿½ï¿½Cï¿½oï¿½Ó¦rï¿½ï¿½Nï¿½Rï¿½ï¿½ï¿½Fï¿½ï¿½lï¿½rï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å®ï¿½
-					if (str == null || (str.trim()).length() == 0) {
-						errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½iï¿½sï¿½ï¿½");
-					}
-					// ï¿½pï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Aï¿½Ð±Nï¿½Aï¿½ï¿½ï¿½oï¿½eï¿½^ï¿½ï¿½ï¿½
-					//isEmpty() ï¿½pï¿½Glength()ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½kï¿½ï¿½^trueï¿½Aï¿½_ï¿½hï¿½ï¿½^false
-					if (!errorMsgs.isEmpty()) {
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
-						failureView.forward(req, res);
-						return;//ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-					}
-					
-					Integer id = null;
-					try {
-						id = new Integer(str);
-					} catch (Exception e) {
-						errorMsgs.add("ï¿½ï¿½ï¿½iï¿½sï¿½ï¿½ï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½T");
-					}
-					if (!errorMsgs.isEmpty()) {
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
-						failureView.forward(req, res);
-						                                    //ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-						return;
-					}
-                                                            //2.ï¿½ï¿½dï¿½ß¸ï¿½ï¿½ getOne_For_Display
-					AnnService annSvc = new AnnService();
-					AnnVO annVO = annSvc.getOneAnn(id);
-					if (annVO == null) {
-						errorMsgs.add("ï¿½dï¿½Lï¿½ï¿½ï¿½");
-					}
-					if (!errorMsgs.isEmpty()) {
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
-						failureView.forward(req, res);
-						return;//ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-					}
-			                                                 //3.ï¿½dï¿½ß§ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½(Send the Success view)	
-					req.setAttribute("annVO", annVO);
-					                                                   // ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ listOneEmp.jsp
-					String url = "/back-end/announcemet/listOneAnn.jsp";
-					RequestDispatcher successView = req.getRequestDispatcher(url); 
-					successView.forward(req, res);
-					
-			                                                     //ï¿½ï¿½Lï¿½dï¿½ß¥iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z	
-			   }catch (Exception e) {
-					errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½ï¿½ï¿½iï¿½sï¿½ï¿½ï¿½ï¿½ï¿½:" + e.getMessage());
-					RequestDispatcher failureView = req
-							.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
-					failureView.forward(req, res);
-				}
-			}
-			
-			
-// ï¿½ï¿½@ï¿½dï¿½ï¿½ => ï¿½eï¿½x_ listAllAnnf.jspï¿½ï¿½ï¿½Ð¨D (ï¿½eï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½dï¿½ï¿½)
-						if ("getOne_For_front".equals(action)) { 
-				
-							List<String> errorMsgs = new LinkedList<String>();
-							                                           // ï¿½Nï¿½ï¿½ï¿½Xï¿½xï¿½sï¿½bï¿½Ð¨Dï¿½dï¿½ï¿½ ï¿½Bï¿½oï¿½eï¿½ï¿½ï¿½~.
-							req.setAttribute("errorMsgs", errorMsgs);
-					
-							try {
-								                                    //1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z
-								String str = req.getParameter("id");
-								                                    //trim() ï¿½rï¿½ï¿½}ï¿½Yï¿½Îµï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Å®ï¿½ï¿½
-								                                    //ï¿½ï¿½^ï¿½@ï¿½Ó·sï¿½ï¿½ï¿½rï¿½ï¿½Cï¿½oï¿½Ó¦rï¿½ï¿½Nï¿½Rï¿½ï¿½ï¿½Fï¿½ï¿½lï¿½rï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å®ï¿½
-							if (str == null || (str.trim()).length() == 0) {
-								errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½iï¿½sï¿½ï¿½");
-							}
-								                           // ï¿½pï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Aï¿½Ð±Nï¿½Aï¿½ï¿½ï¿½oï¿½eï¿½^ï¿½ï¿½ï¿½
-								                          //isEmpty() ï¿½pï¿½Glength()ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½kï¿½ï¿½^trueï¿½Aï¿½_ï¿½hï¿½ï¿½^false
-							if (!errorMsgs.isEmpty()) {
-								RequestDispatcher failureView = req
-										.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
-								failureView.forward(req, res);
-									return;//ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-							}
-								
-							Integer id = null;
-							try {
-								id = new Integer(str);
-							} catch (Exception e) {
-								errorMsgs.add("ï¿½ï¿½ï¿½iï¿½sï¿½ï¿½ï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½T");
-							}
-							if (!errorMsgs.isEmpty()) {
-								RequestDispatcher failureView = req
-									.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
-								failureView.forward(req, res);
-									         //ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-								return;
-							}
-			                                                            //2.ï¿½ï¿½dï¿½ß¸ï¿½ï¿½ getOne_For_Display
-							AnnService annSvc = new AnnService();
-							AnnVO annVO = annSvc.getOneAnn(id);
-							if (annVO == null) {
-								errorMsgs.add("ï¿½dï¿½Lï¿½ï¿½ï¿½");
-							}
-							if (!errorMsgs.isEmpty()) {
-								RequestDispatcher failureView = req
-										.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
-								failureView.forward(req, res);
-								return;//ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-							}
-				                                                      //3.ï¿½dï¿½ß§ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½(Send the Success view)	
-							req.setAttribute("annVO", annVO);
-			                                                                      // ï¿½ï¿½ï¿½ 
-				 			String url = "/front-end/announcemet/listOneAnnf.jsp";
-							RequestDispatcher successView = req.getRequestDispatcher(url); 
-							successView.forward(req, res);
-								
-			                                        //ï¿½ï¿½Lï¿½dï¿½ß¥iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z	
-						  }catch (Exception e) {
-							errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½ï¿½ï¿½iï¿½sï¿½ï¿½ï¿½ï¿½ï¿½:" + e.getMessage());
-							RequestDispatcher failureView = req
-									.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
-							failureView.forward(req, res);
-						}
-					}
-	
-				
-						
-// ï¿½×§ï¿½ï¿½ => ï¿½ï¿½x_listAllAnn.jspï¿½ï¿½ï¿½Ð¨D 
-			    if ("getOne_For_Update".equals(action)) {
-			    	//ï¿½ï¿½ï¿½Xï¿½sï¿½bï¿½Ð¨Dï¿½dï¿½ò¤¤¡Aï¿½oï¿½e Error
-			    	List<String> errorMsgs = new LinkedList<String>();
-			    	req.setAttribute("errorMsgs", errorMsgs);
-			    	
-			    	try {
-			          //1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½
-			    		Integer id = new Integer(req.getParameter("id"));
-			    		
-			    	 //2.ï¿½}ï¿½lï¿½dï¿½ß¸ï¿½ï¿½
-			    		AnnService annSvc = new AnnService();
-					    AnnVO annVO = annSvc.getOneAnn(id);
-					    
-					 //3.ï¿½dï¿½ß§ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½
-					    req.setAttribute("annVO", annVO);
-					    String url = "/back-end/announcemet/update_ann_input.jsp";
-					    RequestDispatcher successView = req.getRequestDispatcher(url);
-						successView.forward(req, res);
-						
-					//ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z
-			    	}catch (Exception e) {
-						errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½nï¿½×§ïªºï¿½ï¿½ï¿½:" + e.getMessage());
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/listAllAnn.jsp");
-						failureView.forward(req, res);
-					}
-				}
-			    
-				
-//ï¿½ï¿½x =>ï¿½×§ï¿½ _ï¿½Ó¦ï¿½update_ann_input.jspï¿½ï¿½ï¿½Ð¨D
-			    if ("update".equals(action)) {
-			    	List<String> errorMsgs = new LinkedList<String>();
-			    	req.setAttribute("errorMsgs", errorMsgs);
-			    	
-			    	try {
-                                                                               //1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z
-			    		Integer id = new Integer(req.getParameter("id").trim());
-			    		
-			    		String content = req.getParameter("content");
-			    		String contentReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,5000}$";
-			    		
-			    		if (content == null || content.trim().length() == 0) {
-							errorMsgs.add("ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½e: ï¿½Ð¤ÅªÅ¥ï¿½");
-						} else if(!content.trim().matches(contentReg)) { 
-							errorMsgs.add("ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½e: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½10ï¿½ï¿½ï¿½ï¿½");
-			            }
-			    		
-			    		java.sql.Date update = null;
-			    		
-						try {
-							update = java.sql.Date.valueOf(req.getParameter("update").trim());
-						} catch (IllegalArgumentException e) {
-							update=new java.sql.Date(System.currentTimeMillis());
-							errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½!");
-						}
-						
-                                                                                //ï¿½Ï¤ï¿½ï¿½Bï¿½zï¿½Wï¿½ï¿½
-                        InputStream inP = req.getPart("pic").getInputStream();
-						 byte[] pic = new byte[inP.available()];
-						
-						 inP.read(pic);
-						 inP.close();
-					
-						AnnVO annVO = new AnnVO();
-						annVO.setId(id);
-						annVO.setContent(content);
-						annVO.setUpdate(update);
-						annVO.setPic(pic);
-			    		
-						if (!errorMsgs.isEmpty()) {
-							req.setAttribute("annVO", annVO); // ï¿½tï¿½ï¿½ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½~ï¿½ï¿½annVOï¿½ï¿½ï¿½ï¿½,ï¿½]ï¿½sï¿½Jreq
-							RequestDispatcher failureView = req
-									.getRequestDispatcher("/back-end/announcemet/update_ann_input.jsp");
-							failureView.forward(req, res);
-							return; //ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
-						}
-						
-					//2.ï¿½}ï¿½lï¿½×§ï¿½ï¿½ï¿½
-						 AnnService annSvc = new AnnService();
-						 annVO = annSvc.updateAnn(id, content, update,pic);
-			    		
-					//3.ï¿½×§ï§¹ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½
-						 req.setAttribute("annVO", annVO);
-						 String url = "/back-end/announcemet/listOneAnn.jsp";
-						 RequestDispatcher successView = req.getRequestDispatcher(url);
-						 successView.forward(req, res);
-						 
-					// ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z 
-			    	}catch (Exception e) {
-						errorMsgs.add("ï¿½×§ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½:"+e.getMessage());
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/update_ann_input.jsp");
-						failureView.forward(req, res);
-			         }
-			     }
-			    
-				
-//ï¿½ï¿½x =>ï¿½sï¿½Wï¿½ï¿½_ï¿½Ó¦ï¿½addAnn.jspï¿½ï¿½ï¿½Ð¨D 
-			    if ("insert".equals(action)) {  
-			    	
-			    	List<String> errorMsgs = new LinkedList<String>();
-			    	req.setAttribute("errorMsgs", errorMsgs);
-			    	
-			    	try {
-			    		//1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z
-			    		String content = req.getParameter("content");
-						String contentReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$";
-						
-						if (content == null || content.trim().length() == 0) {
-							errorMsgs.add("ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½e: ï¿½Ð¤ÅªÅ¥ï¿½");
-						} else if(!content.trim().matches(contentReg)) { 
-							errorMsgs.add("ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½e: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½50ï¿½ï¿½ï¿½ï¿½");
-			              }
-						
-						java.sql.Date update = null;
-						
-						try {
-							update = java.sql.Date.valueOf(req.getParameter("update").trim());
-						} catch (IllegalArgumentException e) {
-							update=new java.sql.Date(System.currentTimeMillis());
-							errorMsgs.add("ï¿½Ð¿ï¿½Ü¤ï¿½ï¿½!");
-						}
-						                                                        //ï¿½Ï¤ï¿½ï¿½Wï¿½ï¿½
-						InputStream inP = req.getPart("pic").getInputStream();
-						
-						byte[] pic = new byte[inP.available()];
-						
-						 inP.read(pic);
-						 inP.close();
-						
-						 
-						AnnVO annVO = new AnnVO();
-						annVO.setContent(content);
-						annVO.setUpdate(update);
-						annVO.setPic(pic);
-						
-						if (!errorMsgs.isEmpty()) {
-							req.setAttribute("annVO", annVO); 
-							RequestDispatcher failureView = req
-									.getRequestDispatcher("/back-end/announcemet/addAnn.jsp");
-							failureView.forward(req, res);
-							return;
-						}
-						
-					                                               //2.ï¿½}ï¿½lï¿½sï¿½Wï¿½ï¿½ï¿½
-						AnnService annSvc = new AnnService();
-						annVO = annSvc.addAnn(content, update, pic);
-					                                                           //3.ï¿½sï¿½Wï¿½ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½
-						String url = "/back-end/announcemet/listAllAnn.jsp";
-						RequestDispatcher successView = req.getRequestDispatcher(url); 
-						successView.forward(req, res);
-						
-					                                      //ï¿½ï¿½Lï¿½sï¿½Wï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z
-			    	}catch (Exception e) {
-						errorMsgs.add(e.getMessage());
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/addAnn.jsp");
-						failureView.forward(req, res);
-					}
-			    	
-			    }
-			    
-		  
- //ï¿½ï¿½x =>ï¿½Rï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_listAllAnn.jspï¿½Ð¨D
-			    if ("delete".equals(action)) {
-			    	
-			    	List<String> errorMsgs = new LinkedList<String>();
-			    	req.setAttribute("errorMsgs", errorMsgs);
-			    	
-			    	try {
-			    		//1.ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½
-			    		Integer id = new Integer(req.getParameter("id"));
-			    		
-			    		//2.ï¿½}ï¿½lï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½3
-			    		AnnService annSvc = new AnnService();
-						annSvc.deleteAnn(id);
-						
-						//3.ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½
-						String url = "/back-end/announcemet/listAllAnn.jsp";
-						RequestDispatcher successView = req.getRequestDispatcher(url);
-						successView.forward(req, res);
-						
-			    	}catch (Exception e) {
-						errorMsgs.add("ï¿½Rï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½:"+e.getMessage());
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/announcemet/listAllAnn.jsp");
-						failureView.forward(req, res);
-			    	
-			          }
-				
-			    }
-		 }		
-	
+package com.announcemet.controller;
+
+import java.io.*;
+import java.util.*;
+import java.io.InputStream;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import javax.servlet.annotation.MultipartConfig;
+//import com.announcement.model.*;
+import com.announcemet.model.AnnService;
+import com.announcemet.model.AnnVO;
+
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 5 * 1024 * 1024, maxRequestSize = 5 * 5 * 1024 * 1024)
+public class AnnServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	public AnnServlet() {
+		super();
 	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		doPost(req, res);
+	}
+
+	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+		req.setCharacterEncoding("UTF-8");
+		String action = req.getParameter("action");
+
+// ³æ¤@¬d¸ß_¨Ó¦Ûselect_page.jspªº½Ð¨D («á¥x­º­¶³æ¤@¬d¸ß)
+		if ("getOne_For_Display".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			// ±N¶°¦XÀx¦s¦b½Ð¨D½d³ò¤¤
+			// µo°e¿ù»~.
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// 1.±µ¦¬½Ð¨D°Ñ¼Æ - ¿é¤J®æ¦¡ªº¿ù»~³B²z
+				String str = req.getParameter("id");
+				// trim() ¦r¦ê¶}ÀY¤Îµ²§À¥h°£ªÅ®æ¥Î
+				// ªð¦^¤@­Ó·sªº¦r¦ê¡C³o­Ó¦r¦ê±N§R°£¤F­ì©l¦r¦êÀY³¡©M§À³¡ªºªÅ®æ
+				if (str == null || (str.trim()).length() == 0) {
+					errorMsgs.add("½Ð¿é¤J¤½§i½s¸¹");
+				}
+				// ¦pªG¦³¿ù»~¡A½Ð±N¦A¦¸µo°e¦^ªí³æ
+				// isEmpty() ¦pªGlength()¬°0¦¹¤èªkªð¦^true¡A§_«hªð¦^false
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
+					failureView.forward(req, res);
+					return;// µ{¦¡¤¤Â_
+				}
+
+				Integer id = null;
+				try {
+					id = new Integer(str);
+				} catch (Exception e) {
+					errorMsgs.add("¤½§i½s¸¹®æ¦¡¤£¥¿½T");
+				}
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
+					failureView.forward(req, res);
+					// µ{¦¡¤¤Â_
+					return;
+				}
+				// 2.§ì¬d¸ß¸ê®Æ getOne_For_Display
+				AnnService annSvc = new AnnService();
+				AnnVO annVO = annSvc.getOneAnn(id);
+				if (annVO == null) {
+					errorMsgs.add("¬dµL¸ê®Æ");
+				}
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+				// 3.¬d¸ß§¹¦¨,·Ç³ÆÂà¥æ(Send the Success view)
+				req.setAttribute("annVO", annVO);
+				// ¦¨¥\Âà¥æ listOneEmp.jsp
+				String url = "/back-end/announcemet/listOneAnn.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¬d¸ß¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o¤½§i½s¸¹¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/select_page.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// ³æ¤@¬d¸ß => «e¥x_ listAllAnnf.jspªº½Ð¨D («e¥x­º­¶³æ¤@¬d¸ß)
+		if ("getOne_For_front".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				String str = req.getParameter("id");
+				if (str == null || (str.trim()).length() == 0) {
+					errorMsgs.add("½Ð¿é¤J¤½§i½s¸¹");
+				}
+
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				Integer id = null;
+				try {
+					id = new Integer(str);
+				} catch (Exception e) {
+					errorMsgs.add("¤½§i½s¸¹®æ¦¡¤£¥¿½T");
+				}
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
+					failureView.forward(req, res);
+
+					return;
+				}
+				// 2.§ì¬d¸ß¸ê®Æ getOne_For_Display
+				AnnService annSvc = new AnnService();
+				AnnVO annVO = annSvc.getOneAnn(id);
+				if (annVO == null) {
+					errorMsgs.add("¬dµL¸ê®Æ");
+				}
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+				// 3.¬d¸ß§¹¦¨,·Ç³ÆÂà¥æ(Send the Success view)
+				req.setAttribute("annVO", annVO);
+				// Âà¥æ
+				String url = "/front-end/announcemet/listOneAnnf.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¬d¸ß¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o¤½§i½s¸¹¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/front-end/announcemet/listAllAnnf.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// ­×§ï¥Î => «á¥x_listAllAnn.jspªº½Ð¨D
+		if ("getOne_For_Update".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// 1.±µ¦¬½Ð¨D°Ñ¼Æ
+				Integer id = new Integer(req.getParameter("id"));
+
+				// 2.¶}©l¬d¸ß¸ê®Æ
+				AnnService annSvc = new AnnService();
+				AnnVO annVO = annSvc.getOneAnn(id);
+
+				// 3.¬d¸ß§¹¦¨,·Ç³ÆÂà¥æ
+				req.setAttribute("annVO", annVO);
+				String url = "/back-end/announcemet/update_ann_input.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o­n­×§ïªº¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/listAllAnn.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x =>­×§ï _¨Ó¦Ûupdate_ann_input.jspªº½Ð¨D
+		if ("update".equals(action)) {
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// 1.±µ¦¬½Ð¨D°Ñ¼Æ - ¿é¤J®æ¦¡ªº¿ù»~³B²z
+				Integer id = new Integer(req.getParameter("id").trim());
+
+				String content = req.getParameter("content");
+				String contentReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,8500}$";
+
+				if (content == null || content.trim().length() == 0) {
+					errorMsgs.add("¤½§i¤º®e: ½Ð¤ÅªÅ¥Õ");
+				} else if (!content.trim().matches(contentReg)) {
+					errorMsgs.add("¤½§i¤º®e: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				java.sql.Date update = null;
+
+				try {
+					update = java.sql.Date.valueOf(req.getParameter("update").trim());
+				} catch (IllegalArgumentException e) {
+					update = new java.sql.Date(System.currentTimeMillis());
+					errorMsgs.add("½Ð¿é¤J¤é´Á!");
+				}
+
+				// ¹Ï¤ù³B²z¤W¶Ç
+				InputStream inP = req.getPart("pic").getInputStream();
+				byte[] pic = new byte[inP.available()];
+
+				inP.read(pic);
+				inP.close();
+
+				AnnVO annVO = new AnnVO();
+				annVO.setId(id);
+				annVO.setContent(content);
+				annVO.setUpdate(update);
+				annVO.setPic(pic);
+
+				if (!errorMsgs.isEmpty()) {
+					req.setAttribute("annVO", annVO); // §t¦³¿é¤J®æ¦¡¿ù»~ªºannVOª«¥ó,¤]¦s¤Jreq
+					RequestDispatcher failureView = req
+							.getRequestDispatcher("/back-end/announcemet/update_ann_input.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				// 2.¶}©l­×§ï¸ê®Æ
+				AnnService annSvc = new AnnService();
+				annVO = annSvc.updateAnn(id, content, update, pic);
+
+				// 3.­×§ï§¹¦¨,·Ç³ÆÂà¥æ
+				req.setAttribute("annVO", annVO);
+				String url = "/back-end/announcemet/listOneAnn.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add("­×§ï¸ê®Æ¥¢±Ñ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/update_ann_input.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x =>·s¼W¥Î_¨Ó¦ÛaddAnn.jspªº½Ð¨D
+		if ("insert".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// 1.±µ¦¬½Ð¨D°Ñ¼Æ - ¿é¤J®æ¦¡ªº¿ù»~³B²z
+				String content = req.getParameter("content");
+				String contentReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,8500}$";
+
+				if (content == null || content.trim().length() == 0) {
+					errorMsgs.add("¤½§i¤º®e: ½Ð¤ÅªÅ¥Õ");
+				} else if (!content.trim().matches(contentReg)) {
+					errorMsgs.add("¤½§i¤º®e: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				java.sql.Date update = null;
+
+				try {
+					update = java.sql.Date.valueOf(req.getParameter("update").trim());
+				} catch (IllegalArgumentException e) {
+					update = new java.sql.Date(System.currentTimeMillis());
+					errorMsgs.add("½Ð¿ï¾Ü¤é´Á!");
+				}
+				// ¹Ï¤ù¤W¶Ç
+				InputStream inP = req.getPart("pic").getInputStream();
+
+				byte[] pic = new byte[inP.available()];
+
+				inP.read(pic);
+				inP.close();
+
+				AnnVO annVO = new AnnVO();
+				annVO.setContent(content);
+				annVO.setUpdate(update);
+				annVO.setPic(pic);
+
+				if (!errorMsgs.isEmpty()) {
+					req.setAttribute("annVO", annVO);
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/addAnn.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				// 2.¶}©l·s¼W¸ê®Æ
+				AnnService annSvc = new AnnService();
+				annVO = annSvc.addAnn(content, update, pic);
+				// 3.·s¼W§¹¦¨,·Ç³ÆÂà¥æ
+				String url = "/back-end/announcemet/listAllAnn.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L·s¼W¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add(e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/addAnn.jsp");
+				failureView.forward(req, res);
+			}
+
+		}
+
+		// «á¥x =>§R°£_­¶­±¥Î_listAllAnn.jsp½Ð¨D
+		if ("delete".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// 1.±µ¦¬½Ð¨D°Ñ¼Æ
+				Integer id = new Integer(req.getParameter("id"));
+
+				// 2.¶}©l§R°£¸ê®Æ
+				AnnService annSvc = new AnnService();
+				annSvc.deleteAnn(id);
+
+				// 3.§R°£§¹¦¨,·Ç³ÆÂà¥æ
+				String url = "/back-end/announcemet/listAllAnn.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+			} catch (Exception e) {
+				errorMsgs.add("§R°£¸ê®Æ¥¢±Ñ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/announcemet/listAllAnn.jsp");
+				failureView.forward(req, res);
+
+			}
+
+		}
+	}
+
+}

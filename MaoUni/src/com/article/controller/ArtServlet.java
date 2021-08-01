@@ -12,358 +12,343 @@ import com.article.model.*;
 import com.article.model.ArtService;
 import com.article.model.ArtVO;
 
-//ï¿½ï¿½ï¿½Ñ¤å³¹
+//ª¾ÃÑ¤å³¹
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 5 * 1024 * 1024, maxRequestSize = 5 * 5 * 1024 * 1024)
 public class ArtServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    public ArtServlet() {
-        super();
-    }
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	public ArtServlet() {
+		super();
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doPost(req, res);
 	}
-	
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException{
-		
+
+	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
 		req.setCharacterEncoding("UTF-8");
 		String action = req.getParameter("action");
-		
-//ï¿½ï¿½x(ï¿½ï¿½@ï¿½dï¿½ï¿½)_getOne_For_Display => ï¿½Ó¦ï¿½select_page_art.jspï¿½ï¿½ï¿½Ð¨D
-		
+
+		// «á¥x(³æ¤@¬d¸ß)_getOne_For_Display => ¨Ó¦Ûselect_page_art.jspªº½Ð¨D
+
 		if ("getOne_For_Display".equals(action)) {
-			
+
 			List<String> errorMsgs = new LinkedList<String>();
 			req.setAttribute("errorMsgs", errorMsgs);
-			
+
 			try {
-				//ï¿½Ð¨Dï¿½Ñ¼ï¿½--ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½~ï¿½Bï¿½z
+				// ½Ð¨D°Ñ¼Æ--¿é¤J®æ¦¡¿ù»~³B²z
 				String str = req.getParameter("id");
 				if (str == null || (str.trim()).length() == 0) {
-					errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½å³¹ï¿½sï¿½ï¿½");
+					errorMsgs.add("½Ð¿é¤J¤å³¹½s¸¹");
 				}
 				if (!errorMsgs.isEmpty()) {
-					RequestDispatcher failureView = req
-							.getRequestDispatcher("/back-end/article/select_page_art.jsp");
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/select_page_art.jsp");
 					failureView.forward(req, res);
-					return;//ï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½_
+					return;
 				}
-				
+
 				Integer id = null;
 				try {
 					id = new Integer(str);
 				} catch (Exception e) {
-					errorMsgs.add("ï¿½å³¹ï¿½sï¿½ï¿½ï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½T");
+					errorMsgs.add("¤å³¹½s¸¹®æ¦¡¤£¥¿½T");
 				}
 				if (!errorMsgs.isEmpty()) {
-					RequestDispatcher failureView = req
-							.getRequestDispatcher("/back-end/article/select_page_art.jsp");
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/select_page_art.jsp");
 					failureView.forward(req, res);
 					return;
 				}
-				
-			//ï¿½}ï¿½lï¿½dï¿½ß¸ï¿½ï¿½_getOne_For_Display
+
+				// ¶}©l¬d¸ß¸ê®Æ_getOne_For_Display
 				ArtService artSvc = new ArtService();
 				ArtVO artVO = artSvc.getOneByID(id);
-				
-				  if (artVO == null) {
-					   errorMsgs.add("ï¿½dï¿½Lï¿½ï¿½ï¿½");
-				  }
-				  if (!errorMsgs.isEmpty()) {
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/article/select_page_art.jsp");
-						failureView.forward(req, res);
-						return;
-					}
-				  
-			//ï¿½dï¿½ß§ï¿½ï¿½ï¿½ ï¿½Aï¿½Ç³ï¿½ï¿½ï¿½ï¿½_getOne_For_Display => listOneArt.jsp
-				  req.setAttribute("artVO", artVO);
-				  String url = "/back-end/article/listOneArt.jsp";
-				  
-				  RequestDispatcher successView = req.getRequestDispatcher(url); 
-					successView.forward(req, res);
-				
-		    //ï¿½ï¿½Lï¿½iï¿½ï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½Bï¿½z_getOne_For_Display
-			      } catch (Exception e) {
-				     errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½ï¿½ï¿½:" + e.getMessage());
-				     RequestDispatcher failureView = req
-						  .getRequestDispatcher("/back-end/article/select_page_art.jsp");
-				     failureView.forward(req, res);
-			    }
-		   }
-		
-//ï¿½ï¿½x(ï¿½×§ï¿½)_getOne_For_Update => ï¿½Ó¦ï¿½ listAllArt.jsp ï¿½ï¿½ï¿½Ð¨D	
-		
-		if ("getOne_For_Update".equals(action)) {
-			
-			List<String> errorMsgs = new LinkedList<String>();
-			req.setAttribute("errorMsgs", errorMsgs);
-			
-			try {
-				//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½_getOne_For_Update
-				
-				   Integer id = new Integer(req.getParameter("id"));
-				
-				//ï¿½}ï¿½lï¿½dï¿½ß¸ï¿½ï¿½_getOne_For_Update
-				   
-				  ArtService artSvc = new ArtService();
-				  ArtVO artVO = artSvc.getOneByID(id);
-				  
-				 //ï¿½dï¿½ß§ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½_getOne_For_Update => update_art_input.jsp
-				
-				  req.setAttribute("artVO", artVO); 
-				  String url = "/back-end/article/update_art_input.jsp";
-				  RequestDispatcher successView = req.getRequestDispatcher(url);
-				  successView.forward(req, res);
-				
-			    // ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z_getOne_For_Update
-				  
-			      }catch (Exception e) {
-				      errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½nï¿½×§ïªºï¿½ï¿½ï¿½:" + e.getMessage());
-				      RequestDispatcher failureView = req
-						         .getRequestDispatcher("/back-end/article/listAllArt.jsp");
-				      failureView.forward(req, res);
-			       }
-		}
-		
-//ï¿½eï¿½x(ï¿½ï¿½@ï¿½dï¿½ï¿½)_getOne_For_Check => ï¿½Ó¦ï¿½ listAllArt_f.jsp ï¿½ï¿½ï¿½Ð¨D	
-		
-				if ("getOne_For_Check".equals(action)) {
-					
-					List<String> errorMsgs = new LinkedList<String>();
-					req.setAttribute("errorMsgs", errorMsgs);
-					
-					try {
-						//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½_getOne_For_Update
-						
-						   Integer id = new Integer(req.getParameter("id"));
-						
-						//ï¿½}ï¿½lï¿½dï¿½ß¸ï¿½ï¿½_getOne_For_Update
-						   
-						  ArtService artSvc = new ArtService();
-						  ArtVO artVO = artSvc.getOneByID(id);
-						  
-						 //ï¿½dï¿½ß§ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½_getOne_For_Update => update_art_input.jsp
-						
-						  req.setAttribute("artVO", artVO); 
-						  String url = "/front-end/article/listOneArt_f.jsp";
-						  RequestDispatcher successView = req.getRequestDispatcher(url);
-						  successView.forward(req, res);
-						
-					    // ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z_getOne_For_Update
-						  
-					      }catch (Exception e) {
-						      errorMsgs.add("ï¿½Lï¿½kï¿½ï¿½ï¿½oï¿½nï¿½×§ïªºï¿½ï¿½ï¿½:" + e.getMessage());
-						      RequestDispatcher failureView = req
-								         .getRequestDispatcher("/front-end/article/listOneArt_f.jsp");
-						      failureView.forward(req, res);
-					       }
+
+				if (artVO == null) {
+					errorMsgs.add("¬dµL¸ê®Æ");
 				}
-		
-//ï¿½ï¿½x(ï¿½×§ï¿½)_update => ï¿½Ó¦ï¿½ update_art_input.jsp ï¿½ï¿½ï¿½Ð¨D	
-		
-		if ("update".equals(action)) {
-			
+				if (!errorMsgs.isEmpty()) {
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/select_page_art.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				// ¬d¸ß§¹¦¨ ¡A·Ç³ÆÂà¥æ_getOne_For_Display => listOneArt.jsp
+				req.setAttribute("artVO", artVO);
+				String url = "/back-end/article/listOneArt.jsp";
+
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯à¿ù»~ªº³B²z_getOne_For_Display
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/select_page_art.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x(­×§ï)_getOne_For_Update => ¨Ó¦Û listAllArt.jsp ªº½Ð¨D
+
+		if ("getOne_For_Update".equals(action)) {
+
 			List<String> errorMsgs = new LinkedList<String>();
 			req.setAttribute("errorMsgs", errorMsgs);
-			
+
 			try {
-				//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z_update
-				 //ï¿½å³¹id
+				// ±µ¦¬½Ð¨D°Ñ¼Æ_getOne_For_Update
+
+				Integer id = new Integer(req.getParameter("id"));
+
+				// ¶}©l¬d¸ß¸ê®Æ_getOne_For_Update
+
+				ArtService artSvc = new ArtService();
+				ArtVO artVO = artSvc.getOneByID(id);
+
+				// ¬d¸ß§¹¦¨,·Ç³ÆÂà¥æ_getOne_For_Update => update_art_input.jsp
+
+				req.setAttribute("artVO", artVO);
+				String url = "/back-end/article/update_art_input.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z_getOne_For_Update
+
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o­n­×§ïªº¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/listAllArt.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «e¥x(³æ¤@¬d¬Ý)_getOne_For_Check => ¨Ó¦Û listAllArt_f.jsp ªº½Ð¨D
+
+		if ("getOne_For_Check".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// ±µ¦¬½Ð¨D°Ñ¼Æ_getOne_For_Update
+
+				Integer id = new Integer(req.getParameter("id"));
+
+				// ¶}©l¬d¸ß¸ê®Æ_getOne_For_Update
+
+				ArtService artSvc = new ArtService();
+				ArtVO artVO = artSvc.getOneByID(id);
+
+				// ¬d¸ß§¹¦¨,·Ç³ÆÂà¥æ_getOne_For_Update => update_art_input.jsp
+
+				req.setAttribute("artVO", artVO);
+				String url = "/front-end/article/listOneArt_f.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z_getOne_For_Update
+
+			} catch (Exception e) {
+				errorMsgs.add("µLªk¨ú±o­n­×§ïªº¸ê®Æ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/front-end/article/listOneArt_f.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x(­×§ï)_update => ¨Ó¦Û update_art_input.jsp ªº½Ð¨D
+
+		if ("update".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// ±µ¦¬½Ð¨D°Ñ¼Æ - ¿é¤J®æ¦¡ªº¿ù»~³B²z_update
+				// ¤å³¹id
 				Integer id = new Integer(req.getParameter("id").trim());
-				
-				 //ï¿½ï¿½ï¿½ï¿½id
+
+				// ¤ÀÃþid
 				Integer artt_id = new Integer(req.getParameter("artt_id").trim());
-				
-				 //ï¿½å³¹ï¿½Wï¿½ï¿½
+
+				// ¤å³¹¦WºÙ
 				String name = req.getParameter("name");
 				String enameReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,50000}$";
-				
+
 				if (name == null || name.trim().length() == 0) {
-					errorMsgs.add("ï¿½å³¹ï¿½Wï¿½ï¿½: ï¿½Ð¤ÅªÅ¥ï¿½");
-				} else if(!name.trim().matches(enameReg)) { 
-					errorMsgs.add("ï¿½å³¹ï¿½Wï¿½ï¿½: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½500ï¿½ï¿½ï¿½ï¿½");
-	            }
-				
-				 //ï¿½å³¹ï¿½Ï¤ï¿½
+					errorMsgs.add("¤å³¹¦WºÙ: ½Ð¤ÅªÅ¥Õ");
+				} else if (!name.trim().matches(enameReg)) {
+					errorMsgs.add("¤å³¹¦WºÙ: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				// ¤å³¹¹Ï¤ù
 				InputStream inP = req.getPart("pic").getInputStream();
-				 byte[] pic = new byte[inP.available()];
-				
-				 inP.read(pic);
-				 inP.close();
-				 
-				 //ï¿½å³¹ï¿½ï¿½ï¿½e
-				 String  contnt = req.getParameter("contnt");
-				 String contntReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$";
-					
-					if (contnt == null || contnt.trim().length() == 0) {
-						errorMsgs.add("ï¿½å³¹ï¿½ï¿½ï¿½e: ï¿½Ð¤ÅªÅ¥ï¿½");
-					} else if(!contnt.trim().matches(enameReg)) { 
-						errorMsgs.add("ï¿½å³¹ï¿½ï¿½ï¿½e: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½500ï¿½ï¿½ï¿½ï¿½");
-		            }
-				
-				 //ï¿½oï¿½ï¿½ï¿½É¶ï¿½
-					java.sql.Date update = null;
-					try {
-						update = java.sql.Date.valueOf(req.getParameter("update").trim());
-					} catch (IllegalArgumentException e) {
-						update=new java.sql.Date(System.currentTimeMillis());
-						errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½!");
-					}
-					
-					ArtVO artVO = new ArtVO();
-					artVO.setId(id);
-					artVO.setArtt_id(artt_id);
-					artVO.setName(name);
-					artVO.setPic(pic);
-					artVO.setContnt(contnt);
-					artVO.setUpdate(update);
-					
-					if (!errorMsgs.isEmpty()) {
-						req.setAttribute("artVO", artVO); 
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/article/update_art_input.jsp");
-						failureView.forward(req, res);
-						return; 
-					}
-					
-				//ï¿½}ï¿½lï¿½×§ï¿½ï¿½ï¿½__update
-					ArtService artSvc = new ArtService();
-					artVO = artSvc.updateArt( id, artt_id ,name , pic ,contnt, update );
-					
-				//ï¿½×§ï§¹ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½__update => listOneArt.jsp
+				byte[] pic = new byte[inP.available()];
+
+				inP.read(pic);
+				inP.close();
+
+				// ¤å³¹¤º®e
+				String contnt = req.getParameter("contnt");
+			    String contntReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,8500}$";
+
+				if (contnt == null || contnt.trim().length() == 0) {
+					errorMsgs.add("¤å³¹¤º®e: ½Ð¤ÅªÅ¥Õ");
+				} else if (!contnt.trim().matches(contntReg)) {
+					errorMsgs.add("¤å³¹¤º®e: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				// µo¥¬®É¶¡
+				java.sql.Date update = null;
+				try {
+					update = java.sql.Date.valueOf(req.getParameter("update").trim());
+				} catch (IllegalArgumentException e) {
+					update = new java.sql.Date(System.currentTimeMillis());
+					errorMsgs.add("½Ð¿é¤J¤é´Á!");
+				}
+
+				ArtVO artVO = new ArtVO();
+				artVO.setId(id);
+				artVO.setArtt_id(artt_id);
+				artVO.setName(name);
+				artVO.setPic(pic);
+				artVO.setContnt(contnt);
+				artVO.setUpdate(update);
+
+				if (!errorMsgs.isEmpty()) {
 					req.setAttribute("artVO", artVO);
-					String url = "/back-end/article/listOneArt.jsp";
-					
-					RequestDispatcher successView = req.getRequestDispatcher(url);
-					successView.forward(req, res);
-					
-				//ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z__update
-			       } catch (Exception e) {
-				      errorMsgs.add("ï¿½×§ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½:"+e.getMessage());
-				      RequestDispatcher failureView = req
-						        .getRequestDispatcher("/back-end/article/update_art_input.jsp");
-				       failureView.forward(req, res);
-			         }
-		 }
-			
-		
-//ï¿½ï¿½x(ï¿½sï¿½W)_insert => ï¿½Ó¦ï¿½ addArt.jsp ï¿½ï¿½ï¿½Ð¨D		
-		
-		 if ("insert".equals(action)) {
-			 
-			 List<String> errorMsgs = new LinkedList<String>();
-			 req.setAttribute("errorMsgs", errorMsgs);
-			 
-			 try {
-				// ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½ - ï¿½ï¿½Jï¿½æ¦¡ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Bï¿½z_insert
-				  //ï¿½ï¿½ï¿½ï¿½id
-				 Integer artt_id = new Integer(req.getParameter("artt_id").trim());
-				 
-				 //ï¿½å³¹ï¿½Wï¿½ï¿½
-				 String name = req.getParameter("name");
-				 String enameReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$";
-					
-					if (name == null || name.trim().length() == 0) {
-						errorMsgs.add("ï¿½å³¹ï¿½Wï¿½ï¿½: ï¿½Ð¤ÅªÅ¥ï¿½");
-					} else if(!name.trim().matches(enameReg)) { 
-						errorMsgs.add("ï¿½å³¹ï¿½Wï¿½ï¿½: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½500ï¿½ï¿½ï¿½ï¿½");
-		            }
-					
-				  //ï¿½å³¹ï¿½Ï¤ï¿½
-					InputStream inP = req.getPart("pic").getInputStream();
-					
-					byte[] pic = new byte[inP.available()];
-					
-					inP.read(pic);
-					inP.close();
-					
-				  //ï¿½å³¹ï¿½ï¿½ï¿½e
-					String  contnt = req.getParameter("contnt");
-					String contntReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$";
-						
-					if (contnt == null || contnt.trim().length() == 0) {
-							errorMsgs.add("ï¿½å³¹ï¿½ï¿½ï¿½e: ï¿½Ð¤ÅªÅ¥ï¿½");
-					} else if(!contnt.trim().matches(enameReg)) { 
-							errorMsgs.add("ï¿½å³¹ï¿½ï¿½ï¿½e: ï¿½uï¿½ï¿½Oï¿½ï¿½ï¿½Bï¿½^ï¿½ï¿½rï¿½ï¿½ï¿½Bï¿½Æ¦rï¿½M_ , ï¿½Bï¿½ï¿½ï¿½×¥ï¿½ï¿½Ý¦b2ï¿½ï¿½500ï¿½ï¿½ï¿½ï¿½");
-			          }
-					
-				  //ï¿½oï¿½ï¿½ï¿½É¶ï¿½
-					java.sql.Date update = null;
-					try {
-						update = java.sql.Date.valueOf(req.getParameter("update").trim());
-					} catch (IllegalArgumentException e) {
-						update=new java.sql.Date(System.currentTimeMillis());
-						errorMsgs.add("ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½!");
-					}
-					
-					ArtVO artVO = new ArtVO();
-					artVO.setArtt_id(artt_id);
-					artVO.setName(name);
-					artVO.setPic(pic);
-					artVO.setContnt(contnt);
-					artVO.setUpdate(update);
-				 
-					if (!errorMsgs.isEmpty()) {
-						req.setAttribute("artVO", artVO); 
-						RequestDispatcher failureView = req
-								.getRequestDispatcher("/back-end/article/addArt.jsp");
-						failureView.forward(req, res);
-						return;
-					}
-				 
-				//ï¿½}ï¿½lï¿½sï¿½Wï¿½ï¿½ï¿½_insert
-					ArtService artSvc = new ArtService();
-					artVO = artSvc.addArt( artt_id ,name , pic ,contnt, update );
-				
-			    //ï¿½sï¿½Wï¿½ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½_insert => listAllArt.jsp
-					String url = "/back-end/article/listAllArt.jsp";
-					RequestDispatcher successView = req.getRequestDispatcher(url);
-					successView.forward(req, res);
-				 
-			    //ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z
-				 
-			       } catch (Exception e) {
-					     errorMsgs.add(e.getMessage());
-					     RequestDispatcher failureView = req
-							     .getRequestDispatcher("/back-end/article/addArt.jsp");
-					     failureView.forward(req, res);
-				     }
-		 }
-			
-//ï¿½ï¿½x(ï¿½Rï¿½ï¿½)_delete => ï¿½Ó¦ï¿½ listAllArt.jsp ï¿½ï¿½ï¿½Ð¨D	
-		 
-		 if ("delete".equals(action)) {
-			 
-			 List<String> errorMsgs = new LinkedList<String>();
-			 req.setAttribute("errorMsgs", errorMsgs);
-			 
-			 try {
-				 //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¨Dï¿½Ñ¼ï¿½_delete
-				 Integer id = new Integer(req.getParameter("id"));
-				 
-				 //ï¿½}ï¿½lï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½_delete
-				 ArtService artSvc = new ArtService();
-				 artSvc.deleteArt(id);
-				 
-				 //ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Ç³ï¿½ï¿½ï¿½ï¿½_delete =>
-				 String url = "/back-end/article/listAllArt.jsp";
-				 RequestDispatcher successView = req.getRequestDispatcher(url);
-				 successView.forward(req, res);
-				 
-				// ï¿½ï¿½Lï¿½iï¿½àªºï¿½ï¿½ï¿½~ï¿½Bï¿½z
-			       }catch (Exception e) {
-					     errorMsgs.add("ï¿½Rï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½:"+e.getMessage());
-					     RequestDispatcher failureView = req
-							    .getRequestDispatcher("/emp/listAllEmp.jsp");
-					     failureView.forward(req, res);
-		            }
-			
-		   }
-		 
-		
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/update_art_input.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				// ¶}©l­×§ï¸ê®Æ__update
+				ArtService artSvc = new ArtService();
+				artVO = artSvc.updateArt(id, artt_id, name, pic, contnt, update);
+
+				// ­×§ï§¹¦¨,·Ç³ÆÂà¥æ__update => listOneArt.jsp
+				req.setAttribute("artVO", artVO);
+				String url = "/back-end/article/listOneArt.jsp";
+
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z__update
+			} catch (Exception e) {
+				errorMsgs.add("­×§ï¸ê®Æ¥¢±Ñ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/update_art_input.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x(·s¼W)_insert => ¨Ó¦Û addArt.jsp ªº½Ð¨D
+
+		if ("insert".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// ±µ¦¬½Ð¨D°Ñ¼Æ - ¿é¤J®æ¦¡ªº¿ù»~³B²z_insert
+				// ¤ÀÃþid
+				Integer artt_id = new Integer(req.getParameter("artt_id").trim());
+
+				// ¤å³¹¦WºÙ
+				String name = req.getParameter("name");
+				String enameReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,500}$";
+
+				if (name == null || name.trim().length() == 0) {
+					errorMsgs.add("¤å³¹¦WºÙ: ½Ð¤ÅªÅ¥Õ");
+				} else if (!name.trim().matches(enameReg)) {
+					errorMsgs.add("¤å³¹¦WºÙ: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				// ¤å³¹¹Ï¤ù
+				InputStream inP = req.getPart("pic").getInputStream();
+
+				byte[] pic = new byte[inP.available()];
+
+				inP.read(pic);
+				inP.close();
+
+				// ¤å³¹¤º®e
+				String contnt = req.getParameter("contnt");
+				String contntReg = "^[(\u4e00-\u9fa5)(a-zA-Z0-9_)]{2,8500}$";
+
+				if (contnt == null || contnt.trim().length() == 0) {
+					errorMsgs.add("¤å³¹¤º®e: ½Ð¤ÅªÅ¥Õ");
+				} else if (!contnt.trim().matches(contntReg)) {
+					errorMsgs.add("¤å³¹¤º®e: ¥u¯à¬O¤¤¡B­^¤å¦r¥À¡B¼Æ¦r©M_ , ¥Bªø«×¥²»Ý¦b2¨ì500¤§¶¡");
+				}
+
+				// µo¥¬®É¶¡
+				java.sql.Date update = null;
+				try {
+					update = java.sql.Date.valueOf(req.getParameter("update").trim());
+				} catch (IllegalArgumentException e) {
+					update = new java.sql.Date(System.currentTimeMillis());
+					errorMsgs.add("½Ð¿é¤J¤é´Á!");
+				}
+
+				ArtVO artVO = new ArtVO();
+				artVO.setArtt_id(artt_id);
+				artVO.setName(name);
+				artVO.setPic(pic);
+				artVO.setContnt(contnt);
+				artVO.setUpdate(update);
+
+				if (!errorMsgs.isEmpty()) {
+					req.setAttribute("artVO", artVO);
+					RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/addArt.jsp");
+					failureView.forward(req, res);
+					return;
+				}
+
+				// ¶}©l·s¼W¸ê®Æ_insert
+				ArtService artSvc = new ArtService();
+				artVO = artSvc.addArt(artt_id, name, pic, contnt, update);
+
+				// ·s¼W§¹¦¨,·Ç³ÆÂà¥æ_insert => listAllArt.jsp
+				String url = "/back-end/article/listAllArt.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z
+
+			} catch (Exception e) {
+				errorMsgs.add(e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/addArt.jsp");
+				failureView.forward(req, res);
+			}
+		}
+
+		// «á¥x(§R°£)_delete => ¨Ó¦Û listAllArt.jsp ªº½Ð¨D
+
+		if ("delete".equals(action)) {
+
+			List<String> errorMsgs = new LinkedList<String>();
+			req.setAttribute("errorMsgs", errorMsgs);
+
+			try {
+				// ±µ¦¬½Ð¨D°Ñ¼Æ_delete
+				Integer id = new Integer(req.getParameter("id"));
+
+				// ¶}©l§R°£¸ê®Æ_delete
+				ArtService artSvc = new ArtService();
+				artSvc.deleteArt(id);
+
+				// §R°£§¹¦¨,·Ç³ÆÂà¥æ_delete =>
+				String url = "/back-end/article/listAllArt.jsp";
+				RequestDispatcher successView = req.getRequestDispatcher(url);
+				successView.forward(req, res);
+
+				// ¨ä¥L¥i¯àªº¿ù»~³B²z
+			} catch (Exception e) {
+				errorMsgs.add("§R°£¸ê®Æ¥¢±Ñ:" + e.getMessage());
+				RequestDispatcher failureView = req.getRequestDispatcher("/back-end/article/listAllArt.jsp");
+				failureView.forward(req, res);
+			}
+
+		}
+
 	}
 }

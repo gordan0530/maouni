@@ -118,21 +118,23 @@ margin-left: 200px;
 
 <!-- 以下 >>隱藏式菜單_內容 -->
   <header>
-    <span class="toggle-button">
+    <span class="toggle-button" style="margin-left:-5px;margin-top:-7px;">
         <div class="menu-bar menu-bar-top"></div>
         <div class="menu-bar menu-bar-middle"></div>
         <div class="menu-bar menu-bar-bottom"></div>
     </span>
     <div class="menu-wrap">
-        <div class="menu-sidebar" style="margin-top:46px;">
+        <div class="menu-sidebar" style="margin-top:30px;">
             <ul class="menu">
-                <li><a href="https://tw.yahoo.com/">Home</a></li>
-                <li><a href="#">美容照護</a></li>
-                <li><a href="#">商城</a></li>
-                <li><a href="#">討論區</a></li>
-                <li><a href="#">會員資料</a></li>
-                <li><a href="<%=request.getContextPath()%>/back-end/article/select_page_art.jsp">知識文章管理</a></li>
-                <li><a href="<%=request.getContextPath()%>/back-end/announcemet/select_page.jsp">公告管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/member/listAllMember.jsp">會員資料管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/item/itemHomePage.jsp">商城管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/front-end/message/addMessage.jsp">商城客服管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/forumpost/forumPostHomePage.jsp">討論區管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/front-end/adopt/adopt_home.jsp">浪浪找家管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/article/select_page_art.jsp">知識站管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/announcemet/select_page.jsp">公告管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/groomer/groomerList.jsp">美容師管理</a></li>
+                <li><a href="<%= request.getContextPath() %>/back-end/groomer/grooming_report.jsp">美容預約檢舉管理</a></li>
             </ul>
         </div>
     </div>
