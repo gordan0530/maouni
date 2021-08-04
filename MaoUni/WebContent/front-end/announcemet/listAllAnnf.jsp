@@ -240,7 +240,7 @@ margin-left: 60px;
  
  <!-- 以下這個範圍只是為了拉長版面顯示可實作的範圍,可直接在這邊開始做你的版面摟! -->
 		
-  <div class="textttt" style=" width: 100%;height: 1000px;">
+  <div class="textttt" style=" width: 100%;height: 1800px;">
  
 <!--內容表格  -->
  <table  class="table1">
@@ -332,6 +332,7 @@ margin-left: 60px;
     <p style="margin-bottom: 10px;">All rights reserved by ©MaoUni 2021 </p>
     </div>	
 	<!-- 以上為底部FOOTER -->
+   
 	
 	<script src="<%= request.getContextPath() %>/resources/js/jquery_1.12.4.min.js"></script>
     <script src="<%= request.getContextPath() %>/resources/js/popper.min.js"></script>

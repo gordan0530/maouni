@@ -150,7 +150,7 @@ margin-left: 200px;
              name="form1">
              
      <div class="form-group">
-         <input type="text" class="email-bt" placeholder="新增文章名稱"  name="name"  
+         <input type="text" class="email-bt" placeholder="新增文章名稱"  name="name" required 
                  value="<%=(artVO==null)? "" : artVO.getName()%>"/>
      </div>    
         
@@ -171,13 +171,13 @@ margin-left: 200px;
      
      <div class="form-group">
         <textarea class="massage-bt" placeholder=" 新增文章內容 Massage" 
-            type="TEXT" name="contnt" value="<%= (artVO==null)? "" : artVO.getContnt()%>"></textarea>
+            type="TEXT" name="contnt" required value="<%= (artVO==null)? "" : artVO.getContnt()%>"></textarea>
      </div> 
           
           
      <div class="input"> 
         <p> 請上傳圖片<font color=red><b>*</b></font>
-             <input type="file" id="pic" name="pic" ></p>
+             <input type="file" id="pic" name="pic" required></p>
      </div>
  <br> 
            

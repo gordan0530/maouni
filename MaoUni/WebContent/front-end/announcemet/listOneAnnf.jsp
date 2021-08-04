@@ -267,7 +267,7 @@ button:hover {
 
 <!-- 以下這個範圍只是為了拉長版面顯示可實作的範圍,可直接在這邊開始做你的版面摟! -->
 		
-  <div class="textttt" style=" width: 100%;height: 950px;">
+  <div class="textttt" style=" width: 100%;height: 1800px;">
 
 <!-- body 內容開始 -->
 

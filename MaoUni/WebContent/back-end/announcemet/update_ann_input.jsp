@@ -174,8 +174,8 @@ button.main_bt:hover{
     
   <!-- 編輯公告內容   -->
   <div class="form-group">
-    <textarea class="massage-bt" placeholder=" 編輯公告內容 Massage" rows="5" id="comment"  type="TEXT" name="content" size="45" 
-    value="<%=annVO.getContent()%>"></textarea>
+    <textarea class="massage-bt" placeholder=" 編輯公告內容 Massage" rows="5" id="comment" required
+     type="TEXT" name="content" size="45" value="<%=annVO.getContent()%>"></textarea>
   </div>
   
   <!-- 編輯公告時間   -->
@@ -185,7 +185,7 @@ button.main_bt:hover{
   
    <!-- 編輯公告圖片   -->
   <div class="input"> 
-    <p> 請上傳圖片 <input type="file" id="pic" name="pic" ></p>
+    <p> 請上傳圖片 <input type="file" id="pic" name="pic" required ></p>
   </div>
   
 

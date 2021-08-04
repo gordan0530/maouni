@@ -162,13 +162,13 @@ button.main_bt:hover{
   </div>
 
   <div class="form-group">
-    <textarea class="massage-bt" placeholder=" 公告內容 Massage" rows="5" id="comment"  type="TEXT" name="content" 
-    value="<%= (annVO==null)? "":annVO.getContent()%>"></textarea>
+    <textarea class="massage-bt" placeholder=" 公告內容 Massage" rows="3" id="comment"  type="TEXT" name="content" 
+        required  value="<%= (annVO==null)? "":annVO.getContent()%>"></textarea>
   </div>
    
   <div class="input"> 
     <p> 請上傳圖片 
-        <input type="file" id="pic" name="pic" > 
+        <input type="file" id="pic" name="pic"  required > 
     </p>
 	</div>
 <br>

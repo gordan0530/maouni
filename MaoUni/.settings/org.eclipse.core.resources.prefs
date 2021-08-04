@@ -1,2 +1,5 @@
 eclipse.preferences.version=1
 encoding//WebContent/front-end/announcemet/listOneAnnf.jsp=UTF-8
+encoding//src/com/sick_list/model/ListVO.java=UTF-8
+encoding//src/com/variety/controller/VarietyServlet.java=UTF-8
+encoding//src/com/works/controller/WorkServlet.java=UTF-8

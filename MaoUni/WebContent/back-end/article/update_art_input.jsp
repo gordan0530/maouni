@@ -156,7 +156,7 @@ margin-left: 200px;
    
     <div class="form-group">
          <h4>文章名稱:</h4>
-            <input type="text" class="email-bt" placeholder="文章名稱"  
+            <input type="text" class="email-bt" placeholder="文章名稱"  required
                    name="name"value="<%=artVO.getName()%>"/>
    </div> 
    
@@ -180,12 +180,12 @@ margin-left: 200px;
       <div class="form-group">
             <h4>文章內容:</h4>
             <textarea class="massage-bt" placeholder=" 文章內容 Massage" 
-                type="TEXT" name="contnt" value="<%=artVO.getContnt()%>"></textarea>
+                type="TEXT" name="contnt" required value="<%=artVO.getContnt()%>"></textarea>
       </div>
          
       <div class="input"> 
           <p> 請上傳圖片<font color=red><b>*</b></font>
-                <input type="file" id="pic" name="pic" ></p>
+                <input type="file" id="pic" name="pic" required></p>
       </div>
       
          <input type="hidden" name="action" value="update">
